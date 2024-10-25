@@ -1,0 +1,31 @@
+{% extends 'base_mail.html' %} {% block content %}
+
+<p>Добрый день, {{first_name}}</p>
+<p>
+    Пожалуйста, подтвердите вашу почту, перейдя по ссылке ниже. Ссылка действительна {{time}} минут
+</p>
+<table
+        role="presentation"
+        border="0"
+        cellpadding="0"
+        cellspacing="0"
+        class="btn btn-primary"
+>
+    <tbody>
+    <tr>
+        <td align="left">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                <tbody>
+                <tr>
+                    <td>
+                        <a href="{{url}}" target="_blank">Подтвердите почту</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+{% endblock %}
