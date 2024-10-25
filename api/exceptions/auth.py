@@ -41,3 +41,37 @@ class AuthHTTPExceptions(BaseHTTPExceptionsContainer):
         status_name = "Bad request"
         detail = 'The verification code is invalid'
         summary = 'Invalid verification code'
+    
+    class UserDoesNotExistException(BaseHTTPException):
+        status_code = status.HTTP_404_NOT_FOUND
+        status_name = "Not found"
+        detail = 'User with email {email} does not exist'
+        summary = 'User does not exist'
+        
+        def __init__(self, email: str):
+            super().__init__(
+                email=email
+            )
+    
+    class WrongPasswordException(BaseHTTPException):
+        status_code = status.HTTP_403_FORBIDDEN
+        status_name = "Forbidden"
+        detail = 'Wrong password'
+        summary = 'Wrong password'
+    
+    class UserInactiveException(BaseHTTPException):
+        status_code = status.HTTP_403_FORBIDDEN
+        status_name = "Forbidden"
+        detail = 'User {email} is not verified'
+        summary = 'User is not verified'
+        
+        def __init__(self, email: str):
+            super().__init__(
+                email=email
+            )
+    
+    class UnauthorisedException(BaseHTTPException):
+        status_code = status.HTTP_401_UNAUTHORIZED
+        status_name = "Unauthorized"
+        detail = 'Unauthorized'
+        summary = 'Unauthorized'

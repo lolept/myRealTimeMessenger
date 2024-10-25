@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     PASSWORD_MIN_LENGTH: int
     PASSWORD_MAX_LENGTH: int
     VERIFICATION_CODE_LIFETIME: int
+    AUTH_COOKIE_LIFETIME: int
+    AUTH_COOKIE_NAME: str
+    AUTH_COOKIE_SECRET: str
+    AUTH_COOKIE_DOMAIN: str
     
     DOMAIN: str
     

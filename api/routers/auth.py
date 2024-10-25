@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response, status
 
-from api.dependencies import get_auth_service
+from api.dependencies import get_auth_service, get_current_active_user
+from api.dependencies import get_current_user
 from api.exceptions import AuthHTTPExceptions
-from api.schemas import UserCreateSchema, UserReadSchema
+from api.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema
 from api.services import AuthService
 
 router = APIRouter(
@@ -33,3 +34,17 @@ async def verify(
         auth_service: AuthService = Depends(get_auth_service)
 ) -> UserReadSchema:
     return await auth_service.verify_user(verification_code)
+
+
+@router.post('/login', status_code=status.HTTP_204_NO_CONTENT,
+             responses=AuthHTTPExceptions.get_responses_dict([
+                 AuthHTTPExceptions.UserDoesNotExistException,
+                 AuthHTTPExceptions.WrongPasswordException
+             ]))
+async def login(
+        user: UserLoginSchema,
+        auth_service: AuthService = Depends(get_auth_service)
+):
+    response = Response(status_code=status.HTTP_204_NO_CONTENT)
+    await auth_service.login(user, response)
+    return response
