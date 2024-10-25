@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     PASSWORD_SALT: bytes
     PASSWORD_MIN_LENGTH: int
     PASSWORD_MAX_LENGTH: int
+    VERIFICATION_CODE_LIFETIME: int
     
     DOMAIN: str
     

@@ -35,3 +35,9 @@ class AuthHTTPExceptions(BaseHTTPExceptionsContainer):
         status_name = "Internal server error"
         detail = 'There was an error while sending an email'
         summary = 'Email error'
+    
+    class InvalidVerificationCodeException(BaseHTTPException):
+        status_code = status.HTTP_400_BAD_REQUEST
+        status_name = "Bad request"
+        detail = 'The verification code is invalid'
+        summary = 'Invalid verification code'
