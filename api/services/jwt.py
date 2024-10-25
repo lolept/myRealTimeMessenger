@@ -3,9 +3,7 @@ import datetime
 import jwt
 from jwt import InvalidTokenError
 
-from api.exceptions import AuthHTTPExceptions, JWTHTTPExceptions
-from api.repositories import UserRepository
-from api.schemas import UserReadSchema
+from api.exceptions import JWTHTTPExceptions
 
 
 class JWTService:

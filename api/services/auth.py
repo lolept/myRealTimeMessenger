@@ -6,7 +6,7 @@ import argon2
 from fastapi import Request, Response
 
 from api.config import settings
-from api.exceptions import AuthHTTPExceptions, BaseHTTPException
+from api.exceptions import AuthHTTPExceptions
 from api.repositories import UserRepository
 from api.schemas import UserCreateSchema, UserReadSchema, UserLoginSchema
 from api.services.jwt import JWTService
@@ -55,6 +55,15 @@ class AuthService:
         password_bytes = password.encode('utf-8')
         hashed_password = argon2.hash_password(password_bytes, salt=cls.password_salt)
         return hashed_password.decode('utf-8')
+    
+    async def _authenticate_user(self, user_login: UserLoginSchema) -> UserReadSchema:
+        user = await self.user_repository.get_one_or_none(email=user_login.email)
+        if not user:
+            raise AuthHTTPExceptions.UserDoesNotExistException(email=user_login.email)
+        hashed_password = await self._hash_password(user_login.password)
+        if hashed_password != user.hashed_password:
+            raise AuthHTTPExceptions.WrongPasswordException()
+        return user
     
     async def delete_unverified_user(self, verification_code: str):
         user = await self.user_repository.get_one_or_none(verification_code=verification_code)
@@ -112,7 +121,7 @@ class AuthService:
         )
     
     async def login(self, user_login: UserLoginSchema, response: Response):
-        user = await self.authenticate_user(user_login)
+        user = await self._authenticate_user(user_login)
         data = {"sub": str(user.email), "aud": self.auth_cookie_name}
         token = await self.jwt_service.generate_jwt(data, self.auth_cookie_lifetime)
         response.set_cookie(
@@ -122,11 +131,8 @@ class AuthService:
             domain=self.auth_cookie_domain,
         )
     
-    async def authenticate_user(self, user_login: UserLoginSchema) -> UserReadSchema:
-        user = await self.user_repository.get_one_or_none(email=user_login.email)
-        if not user:
-            raise AuthHTTPExceptions.UserDoesNotExistException(email=user_login.email)
-        hashed_password = await self._hash_password(user_login.password)
-        if hashed_password != user.hashed_password:
-            raise AuthHTTPExceptions.WrongPasswordException()
-        return user
+    async def logout(self, response: Response):
+        response.delete_cookie(
+            key=self.auth_cookie_name,
+            domain=self.auth_cookie_domain,
+        )
