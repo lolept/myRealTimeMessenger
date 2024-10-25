@@ -36,14 +36,12 @@ class MailingService:
             subject: str,
             template: str,
             email: list[str],
-            data: str | int,
+            template_data: dict,
             name: str
     ) -> None:
         template = self.jinja_env.get_template(f"{template}.html")
         rendered_template = template.render(
-            data=data,
-            first_name=name,
-            subject=subject
+            **template_data
         )
         message = fastapi_mail.MessageSchema(
             subject=subject,
@@ -65,7 +63,7 @@ class MailingService:
                 "Ваш код подтверждения",
                 "verification_mail",
                 [email],
-                url,
+                {'url': url, 'time': settings.VERIFICATION_CODE_LIFETIME // 60},
                 email
             )
         except Exception as e:

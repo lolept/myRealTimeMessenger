@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from api.routers import auth_router
-from api.tasks.startup import on_startup, on_shutdown
+from api.tasks.lifespan import on_startup, on_shutdown
 
 
 @asynccontextmanager

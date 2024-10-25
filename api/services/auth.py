@@ -56,6 +56,11 @@ class AuthService:
             return
         await self.user_repository.delete(verification_code=verification_code)
     
+    async def delete_unverified_users(self):
+        users = await self.user_repository.get_all(is_verified=False)
+        for user in users:
+            await self.user_repository.delete(email=user.email)
+    
     async def register(self,
                        new_user: UserCreateSchema,
                        request: Request | None = None) -> UserReadSchema:
