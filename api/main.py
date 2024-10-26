@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from api.routers import auth_router
+from api.routers import auth_router, chat_router
 from api.tasks.lifespan import on_startup, on_shutdown
 
 
@@ -16,3 +16,5 @@ async def lifespan(_: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(auth_router)
+
+app.include_router(chat_router)

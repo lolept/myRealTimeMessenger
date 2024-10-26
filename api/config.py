@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     EMAIL_HOST: str
     EMAIL_TLS: bool
     
+    REDIS_HOST: str
+    REDIS_PORT: int
+    REDIS_DB: int
+    
     @property
     def db_url(self) -> str:
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"

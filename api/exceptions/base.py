@@ -1,6 +1,6 @@
 from typing import Type
 
-from fastapi import HTTPException
+from fastapi import HTTPException, WebSocketException
 
 
 class BaseHTTPException(HTTPException):
@@ -24,6 +24,12 @@ class BaseHTTPException(HTTPException):
                 }
             }
         }
+    
+    @classmethod
+    def dict(cls) -> dict:
+        return {
+            'detail': cls.detail,
+        }
 
 
 class BaseHTTPExceptionsContainer:
@@ -45,3 +51,23 @@ class BaseHTTPExceptionsContainer:
                 })
             responses_dict[exception.status_code]['content']["application/json"]["examples"].update(exception.example())
         return responses_dict
+
+
+class BaseWebSocketException(WebSocketException):
+    status_code: int
+    detail: str
+    
+    def __init__(self, **kwargs):
+        if kwargs:
+            self.detail = self.detail.format_map(kwargs)
+        super().__init__(code=self.status_code, reason=self.detail)
+    
+    @classmethod
+    def dict(cls) -> dict:
+        return {
+            'detail': cls.detail,
+        }
+
+
+class BaseWebSocketExceptionsContainer:
+    ...

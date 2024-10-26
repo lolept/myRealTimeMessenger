@@ -4,7 +4,6 @@ import fastapi_mail
 import jinja2
 
 from api.config import settings
-from api.schemas.user import UserReadSchema
 
 logger = logging.getLogger(__name__)
 

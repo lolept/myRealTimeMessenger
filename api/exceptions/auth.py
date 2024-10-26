@@ -1,7 +1,8 @@
 from fastapi import status
 
 from api.config import settings
-from .base import BaseHTTPException, BaseHTTPExceptionsContainer
+from .base import BaseHTTPException, BaseHTTPExceptionsContainer, BaseWebSocketExceptionsContainer, \
+    BaseWebSocketException
 
 
 class AuthHTTPExceptions(BaseHTTPExceptionsContainer):
@@ -75,3 +76,18 @@ class AuthHTTPExceptions(BaseHTTPExceptionsContainer):
         status_name = "Unauthorized"
         detail = 'Unauthorized'
         summary = 'Unauthorized'
+
+
+class AuthWebSocketExceptions(BaseWebSocketExceptionsContainer):
+    class UserInactiveException(BaseWebSocketException):
+        status_code = status.WS_1002_PROTOCOL_ERROR
+        detail = 'User {email} is not verified'
+        
+        def __init__(self, email: str):
+            super().__init__(
+                email=email
+            )
+    
+    class UnauthorisedException(BaseWebSocketException):
+        status_code = status.WS_1002_PROTOCOL_ERROR
+        detail = 'Unauthorized'

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex flex-col items-center">
+    <h1>WebSocket Chat</h1>
+    <h2>Chat ID: <span id="chat-id"></span></h2>
+    <form action="" onsubmit="sendMessage(event)">
+        <input class="bg-green-300" type="text" id="messageText" autocomplete="off"/>
+        <button>Send</button>
+    </form>
+    <ul id='messages'>
+    </ul>
+</div>
+<script>
+
+    let chat_id = 2
+
+    async function getLastMessages() {
+        const url = `http://localhost/chat/${chat_id}/messages`
+        const response = await fetch(url, {
+            method: 'GET'
+        })
+        return response.json()
+    }
+
+    getLastMessages()
+        .then(messages => {
+            messages.forEach(msg => {
+                appendMessage(msg, false)
+            })
+        })
+
+    function appendMessage(msg, on_top) {
+        let messages = document.getElementById('messages')
+        let message = document.createElement('li')
+        let content = document.createTextNode(
+            `${msg.user_email}: ${msg.text} (${(new Date(Date.parse(msg.created))).toLocaleString()})`
+        )
+        message.appendChild(content)
+        if (on_top) {
+            messages.prepend(message)
+        } else {
+            messages.appendChild(message)
+        }
+    }
+
+    document.querySelector("#chat-id").textContent = chat_id;
+    let ws = new WebSocket(`ws://localhost/chat/ws/`);
+    ws.onmessage = function (event) {
+        let message_data = JSON.parse(event.data)
+        appendMessage(message_data, true)
+    };
+
+    function sendMessage(event) {
+        let input = document.getElementById("messageText")
+        ws.send(`{"text": "${input.value}"}`)
+        input.value = ''
+        event.preventDefault()
+    }
+</script>
+{% endblock %}
